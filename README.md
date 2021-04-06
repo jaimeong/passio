@@ -15,7 +15,13 @@ The User entity should contain the following basic information.  You can add oth
 
 ------
 
-Dev Log
-12:01 PM - Start research on Docker #2 
-1:00 PM - Pull Postgress container
-1:30 PM - Basic experimentation 
+## Dev Log
+- 12:01 PM - Start research on Docker #2 
+- 1:00 PM - Pull Postgress container
+- 1:30 PM - Basic experimentation 
+
+
+------ 
+## Issues and Solutions
+Issue: docker: Error response from daemon: OCI runtime create failed: container_linux.go:367: starting container process caused: exec: "app": executable file not found in $PATH: unknown.
+Solution:
