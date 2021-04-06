@@ -27,3 +27,6 @@ The User entity should contain the following basic information.  You can add oth
 ## Issues and Solutions
 - Issue: docker: Error response from daemon: OCI runtime create failed: container_linux.go:367: starting container process caused: exec: "app": executable file not found in $PATH: unknown.
     - Solution: set up Dockerfile correctly. https://golangdocs.com/golang-docker
+
+- Issue: Couldn't connect to Docker daemon at http+docker://localhost - is it running? If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+    - Solution: 
