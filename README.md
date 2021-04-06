@@ -19,6 +19,7 @@ The User entity should contain the following basic information.  You can add oth
 - 12:01 PM - Start research on Docker #2 
 - 1:00 PM - Pull Postgress container
 - 1:30 PM - Basic experimentation 
+- 3:00 PM - Barebones containerized HTTP Server created
 
 
 ------ 
