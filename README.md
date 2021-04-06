@@ -20,6 +20,7 @@ The User entity should contain the following basic information.  You can add oth
 - 1:00 PM - Pull Postgress container
 - 1:30 PM - Basic experimentation 
 - 3:00 PM - Barebones containerized HTTP Server created
+- 3:30 pm - Implement user model, local backend api
 
 
 ------ 
