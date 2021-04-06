@@ -29,4 +29,4 @@ The User entity should contain the following basic information.  You can add oth
     - Solution: set up Dockerfile correctly. https://golangdocs.com/golang-docker
 
 - Issue: Couldn't connect to Docker daemon at http+docker://localhost - is it running? If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
-    - Solution: 
+    - Solution: didn't have permssions, run "docker-compose up" as sudo
