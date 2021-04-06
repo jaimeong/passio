@@ -24,6 +24,7 @@ The User entity should contain the following basic information.  You can add oth
 - 4:00 pm - working through postgress blocker: create database command doesn't do anything
     - might be a non-issue in the long run as the goal is to use Go to interact with DB
     - unblocked, SQL is case sensitive; run CREATE DATABASE <name> instead
+ - 4:30 pm - DB created, break time
 
 
 ------ 
