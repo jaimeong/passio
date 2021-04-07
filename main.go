@@ -27,7 +27,7 @@ var users []models.User
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	// set header
 	w.Header().Set("Content-Type", "application/json")
-	rows, err := db.Query(`SELECT username, firstname, middlename, lastname, email, phone FROM users`)
+	rows, err := db.Query(`SELECT username, passwordhash, firstname, middlename, lastname, email, phone FROM users`)
 	CheckError(err)
 
 	var users []models.User
@@ -40,14 +40,14 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		var lastname string
 		var email string
 		var phone string
+		var passwordhash string
 
-		err = rows.Scan(&username, &firstname, &middlename, &lastname, &email, &phone)
+		err = rows.Scan(&username, &passwordhash, &firstname, &middlename, &lastname, &email, &phone)
 		CheckError(err)
-
-		fmt.Println(username, firstname, middlename, lastname, email, phone)
 
 		users = append(users, models.User{
 			Username:   username,
+			Password:   passwordhash,
 			Firstname:  firstname,
 			Middlename: middlename,
 			Lastname:   lastname,
@@ -64,7 +64,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
-	getStmt := `SELECT username, firstname, middlename, lastname, email, phone FROM users where username = $1`
+	getStmt := `SELECT username, passwordhash, firstname, middlename, lastname, email, phone FROM users where username = $1`
 	rows, err := db.Query(getStmt, params["username"])
 	var users []models.User
 
@@ -76,14 +76,14 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		var lastname string
 		var email string
 		var phone string
+		var passwordhash string
 
-		err = rows.Scan(&username, &firstname, &middlename, &lastname, &email, &phone)
+		err = rows.Scan(&username, &passwordhash, &firstname, &middlename, &lastname, &email, &phone)
 		CheckError(err)
-
-		fmt.Println(username, firstname, middlename, lastname, email, phone)
 
 		users = append(users, models.User{
 			Username:   username,
+			Password:   passwordhash,
 			Firstname:  firstname,
 			Middlename: middlename,
 			Lastname:   lastname,
@@ -110,7 +110,6 @@ func hashPass(password string) string {
 
 	// Convert the hashed password to a base64 encoded string
 	var base64EncodedPasswordHash = base64.URLEncoding.EncodeToString(hashedPasswordBytes)
-	fmt.Println(base64EncodedPasswordHash)
 
 	return base64EncodedPasswordHash
 }
@@ -122,7 +121,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	insertDynStmt := `INSERT INTO users(username, passwordhash, firstname, middlename, lastname, email, phone) 
 	values($1, $2, $3, $4, $5, $6, $7)`
-	_, err = db.Exec(insertDynStmt, user.Username, hashPass(user.Password), user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone)
+	user.Password = hashPass(user.Password)
+	_, err = db.Exec(insertDynStmt, user.Username, user.Password, user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone)
 	CheckError(err)
 	json.NewEncoder(w).Encode(user)
 
@@ -140,6 +140,8 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	updateStmt := `update users set passwordhash = $1, firstname = $2, middlename = $3, lastname = $4, email = $5, phone = $6
 
 	where "username"=$7`
+
+	user.Password = hashPass(user.Password)
 	_, e := db.Exec(updateStmt, user.Password, user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone, params["username"])
 	CheckError(e)
 
@@ -156,7 +158,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	_, e := db.Exec(deleteStmt, params["username"])
 	CheckError(e)
 
-	json.NewEncoder(w).Encode(users)
+	fmt.Fprintf(w, "Account deleted \n")
 }
 
 func CheckError(err error) {
