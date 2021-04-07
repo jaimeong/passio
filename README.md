@@ -91,7 +91,7 @@ sudo docker build -t application-tag .
     - there may just be a piece of the puzzle that i'm missing
 - 1:30 pm remove refused connection blocker, solution was to change connection stringg
     - Docker's internal host IP on linux is default to 172.17.0.1
-
+- 2:00 pm clean up loose ends before submitting
 
 ------ 
 ## Issues and Solutions
