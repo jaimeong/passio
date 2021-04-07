@@ -29,11 +29,13 @@ The User entity should contain the following basic information.  You can add oth
  - 6:30 PM - implement create and update. postgres is pretty straightforwards
 
 04/07
-- ran into critical error I have no idea how to solve
-    - local backend (go run ./) connects to DB just find and CRUD opss work perfectly
+- 1:00 pm ran into critical error I have no idea how to solve
+    - local backend (go run ./) connects to DB just fine and CRUD ops work perfectly
     - however, Docker image of my app fails to connect to DB
     - panic: dial tcp 127.0.0.1:5432: connect: connection refused
     - there may just be a piece of the puzzle that i'm missing
+- 1:30 pm remove refused connection blocker, solution was to change connection stringg
+    - Docker's internal host IP on linux is default to 172.17.0.1
 
 
 ------ 
