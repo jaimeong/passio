@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/models"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,15 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
+)
+
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "root"
+	password = "password"
+	dbname   = "passio"
 )
 
 var users []models.User
@@ -46,7 +56,10 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	_ = json.NewDecoder(r.Body).Decode(&user)
 
-	users = append(users, user)
+	insertDynStmt := `INSERT INTO users(username, passwordhash, firstname, middlename, lastname, email, phone) 
+	values($1, $2, $3, $4, $5, $6, $7)`
+	_, err = db.Exec(insertDynStmt, user.Username, user.Password, user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone)
+	CheckError(err)
 	json.NewEncoder(w).Encode(user)
 
 }
@@ -56,24 +69,17 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// get params
+	var user models.User
+	_ = json.NewDecoder(r.Body).Decode(&user)
+
 	params := mux.Vars(r)
+	updateStmt := `update users set passwordhash = $1, firstname = $2, middlename = $3, lastname = $4, email = $5, phone = $6
 
-	for index, item := range users {
-		if item.Username == params["username"] {
-			// delete's slice
-			users = append(users[:index], users[index+1:]...)
+	where "username"=$7`
+	_, e := db.Exec(updateStmt, user.Password, user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone, params["username"])
+	CheckError(e)
 
-			// create's creation
-			var user models.User
-			_ = json.NewDecoder(r.Body).Decode(&user)
-
-			user.Username = params["username"]
-			users = append(users, user)
-			json.NewEncoder(w).Encode(user)
-			return
-		}
-	}
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(user)
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
@@ -97,29 +103,32 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, time.Now().Format("2006-01-02 15:04:05"))
 }
 
+func CheckError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+var db *sql.DB
+var err error
+
 func main() {
 	router := mux.NewRouter()
 
-	users = append(users, models.User{
-		Username:   "1",
-		Password:   "$5F3fAz1",
-		Firstname:  "John",
-		Lastname:   "Smith",
-		Middlename: "Kane",
-		Email:      "test@gmail.com",
-		Phone:      "123-456-7890",
-	})
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	users = append(users, models.User{
-		Username:   "2",
-		Password:   "$45zb34azza1",
-		Firstname:  "Jane",
-		Lastname:   "Doe",
-		Middlename: "Zae",
-		Email:      "test33@gmail.com",
-		Phone:      "000-000-7890",
-	})
+	// open database
+	db, err = sql.Open("postgres", psqlconn)
+	CheckError(err)
 
+	// close database
+	defer db.Close()
+
+	// check db
+	err = db.Ping()
+	CheckError(err)
+
+	fmt.Println("Connected!")
 	router.HandleFunc("/api/users", getUsers).Methods("GET")
 	router.HandleFunc("/api/user/{username}", getUser).Methods("GET")
 	router.HandleFunc("/api/user", createUser).Methods("POST")
