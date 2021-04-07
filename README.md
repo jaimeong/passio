@@ -20,9 +20,18 @@ The User entity should contain the following basic information.  You can add oth
 - 1:00 PM - Pull Postgress container
 - 1:30 PM - Basic experimentation 
 - 3:00 PM - Barebones containerized HTTP Server created
+- 3:30 pm - Implement user model, local backend api
+- 4:00 pm - working through postgress blocker: create database command doesn't do anything
+    - might be a non-issue in the long run as the goal is to use Go to interact with DB
+    - unblocked, SQL is case sensitive; run CREATE DATABASE <name> instead
+ - 4:30 pm - DB created, break time
+ - 6:30 PM - implement create and update. postgres is pretty straightforwards
 
 
 ------ 
 ## Issues and Solutions
 - Issue: docker: Error response from daemon: OCI runtime create failed: container_linux.go:367: starting container process caused: exec: "app": executable file not found in $PATH: unknown.
     - Solution: set up Dockerfile correctly. https://golangdocs.com/golang-docker
+
+- Issue: Couldn't connect to Docker daemon at http+docker://localhost - is it running? If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
+    - Solution: didn't have permssions, run "docker-compose up" as sudo
