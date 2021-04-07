@@ -11,7 +11,30 @@ The User entity should contain the following basic information.  You can add oth
     Last Name – last name of the person
     Email – Email address for the person
     Telephone – primary phone number for the person
+------
+## How to Use
+TLDR; run this in root folder
+```
+cd postgres && sudo docker-compose up -d && cd .. && sudo docker run -it --rm -p 8001:8000 application-tag
+```
 
+1. Spin up postgres container by changing directories into /postgres and running your equivalent docker-compose command
+    - "sudo docker-compose up -d"
+3. Spin up Go rest api by returning to root folder, and running your equivalent docker run command
+    - "sudo docker run -it --rm -p 8001:8000 application-tag"
+
+
+
+## Verifying CRUD
+- Post/Create
+    curl -d @request.json -H "Content-Type: application/json" http://localhost:8001/api/user
+- Put/Update
+    curl -d @request.json -H "Content-Type: application/json" -X PUT  http://localhost:8001/api/user/Marge
+- Read/Get/Gets
+    - curl -v http://localhost:8001/api/users
+    - curl -v http://localhost:8001/api/user/Marge
+- Delete
+    - curl -X DELETE  http://localhost:8001/api/user/Marge
 
 ------
 
@@ -45,3 +68,6 @@ The User entity should contain the following basic information.  You can add oth
 
 - Issue: Couldn't connect to Docker daemon at http+docker://localhost - is it running? If it's at a non-standard location, specify the URL with the DOCKER_HOST environment variable.
     - Solution: didn't have permssions, run "docker-compose up" as sudo
+
+- Issue : panic: dial tcp 127.0.0.1:5432: connect: connection refused
+    - Solution:: connect to container's internal host ip, 127.17.0.1
