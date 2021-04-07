@@ -23,6 +23,9 @@ cd postgres && sudo docker-compose up -d && cd .. && sudo docker run -it --rm -p
 3. Spin up Go rest api by returning to root folder, and running your equivalent docker run command
     - "sudo docker run -it --rm -p 8001:8000 application-tag"
 
+## Connection refused
+If you encounter a connection refused error, the API container is failing to connect to the Postgres container's ip/port. You may encounter this problem on an OS other than Linux. Try changing the host connection from "172.17.0.1" to "host.docker.internal", line 18.
+
 ## Verifying CRUD
 - Post/Create
     - curl -d @request.json -H "Content-Type: application/json" http://localhost:8001/api/user
@@ -69,8 +72,7 @@ Building API (run in root)
 sudo docker build -t application-tag .
 ```
 
-Connection refused
-If you encounter a connection refused error, the API container is failing to connect to the Postgres container's ip/port. You may encounter this problem on an OS other than Linux. Try changing the host connection from "172.17.0.1" to "host.docker.internal", line 18.
+
 ------
 
 ## Dev Log
