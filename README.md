@@ -25,6 +25,7 @@ The User entity should contain the following basic information.  You can add oth
     - might be a non-issue in the long run as the goal is to use Go to interact with DB
     - unblocked, SQL is case sensitive; run CREATE DATABASE <name> instead
  - 4:30 pm - DB created, break time
+ - 6:30 PM - implement create and update. postgres is pretty straightforwards
 
 
 ------ 
