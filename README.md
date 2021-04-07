@@ -16,6 +16,7 @@ The User entity should contain the following basic information.  You can add oth
 ------
 
 ## Dev Log
+04/06
 - 12:01 PM - Start research on Docker #2 
 - 1:00 PM - Pull Postgress container
 - 1:30 PM - Basic experimentation 
@@ -26,6 +27,13 @@ The User entity should contain the following basic information.  You can add oth
     - unblocked, SQL is case sensitive; run CREATE DATABASE <name> instead
  - 4:30 pm - DB created, break time
  - 6:30 PM - implement create and update. postgres is pretty straightforwards
+
+04/07
+- ran into critical error I have no idea how to solve
+    - local backend (go run ./) connects to DB just find and CRUD opss work perfectly
+    - however, Docker image of my app fails to connect to DB
+    - panic: dial tcp 127.0.0.1:5432: connect: connection refused
+    - there may just be a piece of the puzzle that i'm missing
 
 
 ------ 
