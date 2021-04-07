@@ -68,6 +68,9 @@ Building API (run in root)
 ```
 sudo docker build -t application-tag .
 ```
+
+Connection refused
+If you encounter a connection refused error, the API container is failing to connect to the Postgres container's ip/port. You may encounter this problem on an OS other than Linux. Try changing the host connection from "172.17.0.1" to "host.docker.internal", line 18.
 ------
 
 ## Dev Log
@@ -104,3 +107,4 @@ sudo docker build -t application-tag .
 
 - Issue : panic: dial tcp 127.0.0.1:5432: connect: connection refused
     - Solution:: connect to container's internal host ip, 127.17.0.1
+    - host.docker.internal on windows/mac
