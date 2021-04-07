@@ -23,19 +23,51 @@ cd postgres && sudo docker-compose up -d && cd .. && sudo docker run -it --rm -p
 3. Spin up Go rest api by returning to root folder, and running your equivalent docker run command
     - "sudo docker run -it --rm -p 8001:8000 application-tag"
 
-
-
 ## Verifying CRUD
 - Post/Create
-    curl -d @request.json -H "Content-Type: application/json" http://localhost:8001/api/user
+    - curl -d @request.json -H "Content-Type: application/json" http://localhost:8001/api/user
+    - will return a JSON of newly created account
 - Put/Update
-    curl -d @request.json -H "Content-Type: application/json" -X PUT  http://localhost:8001/api/user/Marge
+    - curl -d @request.json -H "Content-Type: application/json" -X PUT  http://localhost:8001/api/user/Marge
+    - will return JSON of updated account
 - Read/Get/Gets
     - curl -v http://localhost:8001/api/users
     - curl -v http://localhost:8001/api/user/Marge
+    - will return all users or specified user
 - Delete
     - curl -X DELETE  http://localhost:8001/api/user/Marge
+    - will return a message "account deleted"
 
+
+## Technical Considerations
+1. Creating and updating passwords will store the hashed + salted password in Postgres
+2. Get/Gets currently returns ALL account info. I'd imagine in a production environment there would be more scrunity about what information is sensitive. I'm sure that the hashed + salted passwords are secure, but it just feels like bad form.
+3. Postgres is in a countainer and the API is in another container. I know that docker-compose can be used for multi-container apps, but I couldn't figure out how to build the yml file.
+4. getUser could be improved a bit, currently it's working almost exactly the same as plural getUsers. In MongoDB there would be a FindOne function, but I'm not sure what the equivalent would be for SQL.
+5. Username is the primary key. I think a primary key/identity tied with an account id would be good too; this allows for users to change their username.
+6. Users table looks like this
+```
+                         Table "public.users"
+    Column    |         Type          | Collation | Nullable | Default 
+--------------+-----------------------+-----------+----------+---------
+ username     | character varying(40) |           | not null | 
+ passwordhash | character varying(96) |           | not null | 
+ firstname    | character varying(40) |           | not null | 
+ middlename   | character varying(40) |           | not null | 
+ lastname     | character varying(40) |           | not null | 
+ email        | character varying(40) |           | not null | 
+```
+
+## Extras
+Accesssing Postgres container from local machine
+```
+sudo docker exec -it postgres_postgres_1 psql -U root
+```
+
+Building API (run in root)
+```
+sudo docker build -t application-tag .
+```
 ------
 
 ## Dev Log
