@@ -5,10 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -27,28 +25,73 @@ var users []models.User
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	// set header
 	w.Header().Set("Content-Type", "application/json")
+	rows, err := db.Query(`SELECT username, firstname, middlename, lastname, email, phone FROM users`)
+	CheckError(err)
 
-	//encode users into json
+	var users []models.User
+
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		var firstname string
+		var middlename string
+		var lastname string
+		var email string
+		var phone string
+
+		err = rows.Scan(&username, &firstname, &middlename, &lastname, &email, &phone)
+		CheckError(err)
+
+		fmt.Println(username, firstname, middlename, lastname, email, phone)
+
+		users = append(users, models.User{
+			Username:   username,
+			Firstname:  firstname,
+			Middlename: middlename,
+			Lastname:   lastname,
+			Email:      email,
+			Phone:      phone,
+		})
+	}
+
+	CheckError(err)
 	json.NewEncoder(w).Encode(users)
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
-	// get params
 	params := mux.Vars(r)
 
-	// loop thhru users, find with id
-	// for _ + for item in users
-	for _, item := range users {
-		if item.Username == params["username"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
+	getStmt := `SELECT username, firstname, middlename, lastname, email, phone FROM users where username = $1`
+	rows, err := db.Query(getStmt, params["username"])
+	var users []models.User
+
+	defer rows.Close()
+	for rows.Next() {
+		var username string
+		var firstname string
+		var middlename string
+		var lastname string
+		var email string
+		var phone string
+
+		err = rows.Scan(&username, &firstname, &middlename, &lastname, &email, &phone)
+		CheckError(err)
+
+		fmt.Println(username, firstname, middlename, lastname, email, phone)
+
+		users = append(users, models.User{
+			Username:   username,
+			Firstname:  firstname,
+			Middlename: middlename,
+			Lastname:   lastname,
+			Email:      email,
+			Phone:      phone,
+		})
 	}
 
-	json.NewEncoder(w).Encode(&models.User{})
-
+	CheckError(err)
+	json.NewEncoder(w).Encode(users)
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
@@ -88,19 +131,11 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	// get params
 	params := mux.Vars(r)
 
-	for index, item := range users {
-		if item.Username == params["username"] {
-			users = append(users[:index], users[index+1:]...)
-			break
-		}
-	}
-	json.NewEncoder(w).Encode(users)
-}
+	deleteStmt := `delete from users where username = $1`
+	_, e := db.Exec(deleteStmt, params["username"])
+	CheckError(e)
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
-	fmt.Println("Endpoint Hit: homePage")
-	io.WriteString(w, time.Now().Format("2006-01-02 15:04:05"))
+	json.NewEncoder(w).Encode(users)
 }
 
 func CheckError(err error) {
