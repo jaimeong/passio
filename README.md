@@ -13,7 +13,7 @@ The User entity should contain the following basic information.  You can add oth
     Telephone – primary phone number for the person
 ------
 ## How to Use
-TLDR; run this in root folder
+TL;DR run this in root folder
 ```
 cd postgres && sudo docker-compose up -d && cd .. && sudo docker run -it --rm -p 8001:8000 application-tag
 ```
