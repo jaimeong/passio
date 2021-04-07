@@ -3,6 +3,7 @@ package main
 import (
 	"app/models"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,10 +11,11 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
-	host     = "localhost"
+	host     = "172.17.0.1"
 	port     = 5432
 	user     = "root"
 	password = "password"
@@ -94,6 +96,25 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
+func hashPass(password string) string {
+	// Convert password string to byte slice
+	var passwordBytes = []byte(password)
+
+	// Hash password with Bcrypt's min cost
+	hashedPasswordBytes, err := bcrypt.
+		GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	// Convert the hashed password to a base64 encoded string
+	var base64EncodedPasswordHash = base64.URLEncoding.EncodeToString(hashedPasswordBytes)
+	fmt.Println(base64EncodedPasswordHash)
+
+	return base64EncodedPasswordHash
+}
+
 func createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var user models.User
@@ -101,7 +122,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	insertDynStmt := `INSERT INTO users(username, passwordhash, firstname, middlename, lastname, email, phone) 
 	values($1, $2, $3, $4, $5, $6, $7)`
-	_, err = db.Exec(insertDynStmt, user.Username, user.Password, user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone)
+	_, err = db.Exec(insertDynStmt, user.Username, hashPass(user.Password), user.Firstname, user.Middlename, user.Lastname, user.Email, user.Phone)
 	CheckError(err)
 	json.NewEncoder(w).Encode(user)
 
